@@ -1,0 +1,18 @@
+{
+  "name": "Belinda Calc 💃✨",
+  "short_name": "Belinda Calc",
+  "description": "¡La calculadora más cute y confiable del mundo! Hecha con amor por Belinda",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ec4899",
+  "theme_color": "#ec4899",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

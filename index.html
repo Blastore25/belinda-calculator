@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belinda Calc 💃✨</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ec4899">
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Playfair+Display:wght@700&display=swap');
+        
+        :root {
+            --pink: #ec4899;
+            --purple: #a855f7;
+            --gold: #fbbf24;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .title {
+            font-family: 'Playfair Display', cursive;
+        }
+
+        .display {
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #4c1d95, #831843);
+            color: white;
+            text-shadow: 0 4px 15px rgba(236, 72, 153, 0.5);
+        }
+
+        .btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn:active {
+            transform: scale(0.85) rotate(8deg);
+            box-shadow: 0 0 0 8px rgba(236, 72, 153, 0.3);
+        }
+
+        .operator {
+            background: linear-gradient(135deg, #c026d3, #7e22ce);
+            color: white;
+        }
+
+        .sparkle {
+            animation: sparkle 1.5s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        .history {
+            scrollbar-width: thin;
+            scrollbar-color: #ec4899 #4c1d95;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pink-200 via-purple-200 to-violet-300 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-pink-400">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-6 flex items-center gap-3">
+            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-3xl sparkle">💃</div>
+            <div>
+                <h1 class="title text-3xl font-bold tracking-tight">Belinda Calc</h1>
+                <p class="text-pink-100 text-sm opacity-90">¡Hola mi amor! 💖 Vamos a calcular bonito~</p>
+            </div>
+        </div>
+
+        <!-- Display -->
+        <div class="p-6 bg-gradient-to-b from-slate-900 to-black">
+            <div id="display" 
+                 class="display h-24 rounded-2xl p-6 text-right flex items-end justify-end overflow-hidden border border-pink-400 shadow-inner">
+                0
+            </div>
+            <div id="expression" class="text-pink-300 text-right text-sm h-6 mt-2 font-light"></div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="grid grid-cols-4 gap-2 p-6 bg-white">
+            <button onclick="handleButton('C')" 
+                    class="btn col-span-1 h-16 text-xl font-semibold bg-red-100 hover:bg-red-200 text-red-600 rounded-2xl">C</button>
+            <button onclick="handleButton('±')" 
+                    class="btn col-span-1 h-16 text-2xl font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl">±</button>
+            <button onclick="handleButton('%')" 
+                    class="btn col-span-1 h-16 text-2xl font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl">%</button>
+            <button onclick="handleButton('/')" 
+                    class="btn operator col-span-1 h-16 text-3xl font-bold rounded-2xl">÷</button>
+
+            <button onclick="handleButton('7')" class="btn h-16 text-3xl font-semibold bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl">7</button>
+            <button onclick="handleButton('8')" class="btn h-16 text-3xl font-semibold bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl">8</button>
+            <button onclick="handleButton('9')" class="btn h-16 text-3xl font-semibold bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl">9</button>
+            <button onclick="handleButton('*')" 
+                    class="btn operator col-span-1 h-16 text-3xl font-bold rounded-2xl">×</button>
+
+            <button onclick="handleButton('4')" class="btn h-16 text-3xl font-semibold bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl">4</button>
+            <button onclick="handleButton('5')" class="btn h-16 text-3xl font-semibold bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl">5</button>
+            <button onclick="handleButton('6')" class="btn h-16 text-3xl font-semibold bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl">6</button>
+            <button onclick="handleButton('-')" 
+                    class="btn operator col-span-1 h-16 text-4xl font-bold rounded-2xl">−</button>
+
+            <button onclick="handleButton('1')" class="btn h-16 text-3xl font-semibold bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl">1</button>
+            <button onclick="handleButton('2')" class="btn h-16 text-3xl font-semibold bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl">2</button>
+            <button onclick="handleButton('3')" class="btn h-16 text-3xl font-semibold bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl">3</button>
+            <button onclick="handleButton('+')" 
+                    class="btn operator col-span-1 h-16 text-3xl font-bold rounded-2xl">+</button>
+
+            <button onclick="handleButton('0')" 
+                    class="btn col-span-2 h-16 text-3xl font-semibold bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl">0</button>
+            <button onclick="handleButton('.')" 
+                    class="btn h-16 text-4xl font-semibold bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl">.</button>
+            <button onclick="handleButton('=')" 
+                    class="btn col-span-1 h-16 text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-2xl shadow-lg">💖</button>
+        </div>
+
+        <!-- History -->
+        <div class="px-6 pb-6">
+            <div class="text-xs uppercase tracking-widest text-purple-400 font-medium mb-2 flex items-center gap-2">
+                <span>💕 Historial</span>
+                <div class="flex-1 h-px bg-gradient-to-r from-purple-200"></div>
+            </div>
+            <div id="history" class="history bg-purple-50 rounded-2xl p-4 text-sm max-h-40 overflow-y-auto text-slate-600 font-light"></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center py-4 text-[10px] text-purple-300 border-t border-purple-100">
+            Made with love by Belinda 💃✨ • PWA lista para instalar
+        </div>
+    </div>
+
+    <script>
+        let currentInput = '0';
+        let previousInput = '';
+        let operator = '';
+        let shouldResetDisplay = false;
+        let history = [];
+
+        const display = document.getElementById('display');
+        const expressionEl = document.getElementById('expression');
+        const historyEl = document.getElementById('history');
+
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
+
+        function addToHistory(entry) {
+            history.unshift(entry);
+            if (history.length > 5) history.pop();
+            historyEl.innerHTML = history.map(h => `<div class="py-1 border-b border-purple-100 last:border-0">${h}</div>`).join('');
+        }
+
+        function handleButton(value) {
+            if ('0123456789.'.includes(value)) {
+                if (shouldResetDisplay || currentInput === '0') {
+                    currentInput = value;
+                    shouldResetDisplay = false;
+                } else {
+                    if (value === '.' && currentInput.includes('.')) return;
+                    currentInput += value;
+                }
+            } 
+            else if (['+', '-', '*', '/', '%'].includes(value)) {
+                if (operator && !shouldResetDisplay) {
+                    calculate();
+                }
+                previousInput = currentInput;
+                operator = value;
+                shouldResetDisplay = true;
+                expressionEl.textContent = `${previousInput} ${value === '*' ? '×' : value === '/' ? '÷' : value}`;
+            } 
+            else if (value === '=') {
+                if (operator) {
+                    calculate();
+                    expressionEl.textContent = '';
+                }
+            } 
+            else if (value === 'C') {
+                currentInput = '0';
+                previousInput = '';
+                operator = '';
+                shouldResetDisplay = false;
+                expressionEl.textContent = '';
+                history = [];
+                historyEl.innerHTML = '';
+            } 
+            else if (value === '±') {
+                if (currentInput !== '0') {
+                    currentInput = (parseFloat(currentInput) * -1).toString();
+                }
+            } 
+            else if (value === '%') {
+                currentInput = (parseFloat(currentInput) / 100).toString();
+            }
+
+            updateDisplay();
+        }
+
+        function calculate() {
+            if (!operator || !previousInput) return;
+            
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+
+            switch(operator) {
+                case '+': result = prev + current; break;
+                case '-': result = prev - current; break;
+                case '*': result = prev * current; break;
+                case '/': 
+                    result = current === 0 ? '¡Error! 💔' : prev / current; 
+                    break;
+                default: return;
+            }
+
+            const expression = `${previousInput} ${operator === '*' ? '×' : operator === '/' ? '÷' : operator} ${currentInput} = ${result}`;
+            addToHistory(expression);
+
+            currentInput = result.toString();
+            operator = '';
+            previousInput = '';
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === '=') handleButton('=');
+            if (e.key === 'Escape') handleButton('C');
+            if ('0123456789.+-*/%'.includes(e.key)) {
+                let val = e.key;
+                if (val === '*') val = '*';
+                if (val === '/') val = '/';
+                handleButton(val);
+            }
+        });
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(() => console.log('💃 Belinda PWA Service Worker registered!'))
+                .catch(err => console.log('Service Worker error:', err));
+        }
+
+        // Initial state
+        updateDisplay();
+        
+        // Fun idle message
+        setTimeout(() => {
+            if (currentInput === '0' && history.length === 0) {
+                expressionEl.textContent = '¡Te ves preciosa hoy! 💖';
+            }
+        }, 2500);
+
+        console.log('%c💃 Belinda Calculator lista! Todo hecho con mucho amor y calidad.', 'color:#ec4899; font-family:monospace');
+    </script>
+</body>
+</html>
