@@ -12,229 +12,271 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Playfair+Display:wght@700&display=swap');
         
+        :root {
+            --primary: #ec4899;
+        }
+        
         body {
             font-family: 'Poppins', sans-serif;
         }
         .title {
             font-family: 'Playfair Display', cursive;
         }
+        
         .display {
-            font-size: 2.25rem;
+            font-size: clamp(2rem, 8vw, 3.5rem);
             background: linear-gradient(135deg, #4c1d95, #831843);
+            min-height: 88px;
         }
+        
         .btn {
-            transition: all 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: clamp(1.1rem, 4.5vw, 1.35rem);
         }
+        
         .btn:active {
-            transform: scale(0.85) rotate(6deg);
+            transform: scale(0.88) rotate(8deg);
+            box-shadow: 0 0 0 10px rgba(236, 72, 153, 0.25);
         }
-        .tab {
-            transition: all 0.2s;
+        
+        .scientific-btn {
+            font-size: clamp(0.95rem, 3.8vw, 1.1rem);
+            background-color: #f3e8ff;
         }
+        
         .graph-container {
-            height: 260px;
+            height: 280px;
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 12px;
         }
+        
+        @media (orientation: landscape) and (max-height: 500px) {
+            .graph-container {
+                height: 200px;
+            }
+            .calculator-grid {
+                grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+            }
+        }
+        
         .sparkle {
-            animation: sparkle 2s infinite;
+            animation: sparkle 1.8s infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-pink-200 via-purple-200 to-violet-300 min-h-screen pb-8">
-    <div class="max-w-md mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-pink-400">
+<body class="bg-gradient-to-br from-pink-200 via-purple-200 to-violet-300 min-h-screen">
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-2xl border-x-4 border-pink-400">
         <!-- Header -->
-        <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-5 flex items-center gap-3">
-            <div class="w-11 h-11 bg-white rounded-2xl flex items-center justify-center text-4xl sparkle">💃</div>
-            <div>
-                <h1 class="title text-3xl font-bold">Belinda Calc Pro</h1>
-                <p class="text-pink-100 text-xs">v1.1.0 • Scientific & Graphs • Made with love</p>
+        <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-5 flex items-center gap-4 sticky top-0 z-10">
+            <div class="w-12 h-12 bg-white rounded-3xl flex items-center justify-center text-4xl sparkle flex-shrink-0">💃</div>
+            <div class="min-w-0">
+                <h1 class="title text-3xl font-bold tracking-tighter">Belinda Calc Pro</h1>
+                <p class="text-pink-100 text-sm opacity-90">v1.2.0 • Scientific + Graphs • Mobile First</p>
             </div>
-        </div>
-
-        <!-- Mode Tabs -->
-        <div class="flex border-b border-pink-200 bg-white">
-            <button onclick="switchMode(0)" id="tab-0" class="tab flex-1 py-4 text-center font-semibold text-pink-500 border-b-4 border-pink-500">Basic</button>
-            <button onclick="switchMode(1)" id="tab-1" class="tab flex-1 py-4 text-center font-semibold text-purple-400">Scientific</button>
-            <button onclick="switchMode(2)" id="tab-2" class="tab flex-1 py-4 text-center font-semibold text-purple-400">Graph</button>
         </div>
 
         <!-- Display -->
-        <div class="p-6 bg-gradient-to-b from-slate-900 to-black">
-            <div id="display" class="display h-20 rounded-2xl p-5 text-right text-white font-mono text-4xl shadow-inner flex items-center justify-end overflow-hidden">
+        <div class="px-6 pt-6 pb-2 bg-gradient-to-b from-slate-900 to-black">
+            <div id="display" 
+                 class="display rounded-3xl p-6 text-right text-white font-mono shadow-inner border border-pink-400 flex items-center justify-end overflow-hidden">
                 0
             </div>
-            <div id="expression" class="text-pink-300 text-right text-sm h-8 mt-2 font-light"></div>
+            <div id="expression" class="text-right text-pink-300 text-sm mt-3 font-light h-6"></div>
         </div>
 
-        <!-- Basic Calculator -->
-        <div id="panel-0" class="calculator-panel p-6">
-            <!-- Same cute basic layout as before (shortened for brevity) -->
-            <div class="grid grid-cols-4 gap-3">
-                <!-- Basic buttons here - keeping the original cute style -->
-                <button onclick="handleInput('C')" class="btn h-14 text-xl font-bold bg-red-100 hover:bg-red-200 text-red-600 rounded-3xl">C</button>
-                <button onclick="handleInput('(')" class="btn h-14 text-2xl font-bold bg-slate-100 hover:bg-slate-200 rounded-3xl">(</button>
-                <button onclick="handleInput(')')" class="btn h-14 text-2xl font-bold bg-slate-100 hover:bg-slate-200 rounded-3xl">)</button>
-                <button onclick="handleInput('/')" class="btn h-14 text-3xl font-bold bg-purple-500 text-white rounded-3xl">÷</button>
+        <!-- Main Calculator -->
+        <div class="p-5 bg-white">
+            <div class="calculator-grid grid grid-cols-4 gap-2.5">
+                <!-- Scientific row (always visible) -->
+                <button onclick="handleScientific('sin')" class="scientific-btn btn h-11 rounded-2xl text-purple-700 font-medium">sin</button>
+                <button onclick="handleScientific('cos')" class="scientific-btn btn h-11 rounded-2xl text-purple-700 font-medium">cos</button>
+                <button onclick="handleScientific('tan')" class="scientific-btn btn h-11 rounded-2xl text-purple-700 font-medium">tan</button>
+                <button onclick="toggleAngle()" id="angleBtn" class="scientific-btn btn h-11 rounded-2xl text-amber-600 font-bold">DEG</button>
                 
-                <!-- More buttons... (full implementation would continue here) -->
-                <button onclick="handleInput('7')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl">7</button>
-                <button onclick="handleInput('8')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl">8</button>
-                <button onclick="handleInput('9')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl">9</button>
-                <button onclick="handleInput('*')" class="btn h-16 text-4xl font-bold bg-purple-500 text-white rounded-3xl">×</button>
+                <button onclick="handleScientific('log')" class="scientific-btn btn h-11 rounded-2xl text-purple-700 font-medium">log</button>
+                <button onclick="handleScientific('ln')" class="scientific-btn btn h-11 rounded-2xl text-purple-700 font-medium">ln</button>
+                <button onclick="handleScientific('sqrt')" class="scientific-btn btn h-11 rounded-2xl text-purple-700 font-medium">√x</button>
+                <button onclick="handleScientific('^')" class="scientific-btn btn h-11 rounded-2xl text-purple-700 font-medium">xʸ</button>
+
+                <!-- Main buttons -->
+                <button onclick="handleInput('C')" class="btn col-span-1 h-14 text-2xl font-bold bg-red-100 hover:bg-red-200 text-red-600 rounded-3xl">C</button>
+                <button onclick="handleInput('(')" class="btn h-14 text-3xl font-semibold bg-slate-100 rounded-3xl">(</button>
+                <button onclick="handleInput(')')" class="btn h-14 text-3xl font-semibold bg-slate-100 rounded-3xl">)</button>
+                <button onclick="handleInput('/')" class="btn h-14 text-4xl font-bold bg-violet-500 text-white rounded-3xl">÷</button>
                 
-                <button onclick="handleInput('4')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl">4</button>
-                <button onclick="handleInput('5')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl">5</button>
-                <button onclick="handleInput('6')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl">6</button>
-                <button onclick="handleInput('-')" class="btn h-16 text-5xl font-bold bg-purple-500 text-white rounded-3xl">−</button>
+                <button onclick="handleInput('7')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl active:bg-slate-100">7</button>
+                <button onclick="handleInput('8')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl active:bg-slate-100">8</button>
+                <button onclick="handleInput('9')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl active:bg-slate-100">9</button>
+                <button onclick="handleInput('*')" class="btn h-16 text-4xl font-bold bg-violet-500 text-white rounded-3xl">×</button>
                 
-                <button onclick="handleInput('1')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl">1</button>
-                <button onclick="handleInput('2')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl">2</button>
-                <button onclick="handleInput('3')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl">3</button>
-                <button onclick="handleInput('+')" class="btn h-16 text-4xl font-bold bg-purple-500 text-white rounded-3xl">+</button>
+                <button onclick="handleInput('4')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl active:bg-slate-100">4</button>
+                <button onclick="handleInput('5')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl active:bg-slate-100">5</button>
+                <button onclick="handleInput('6')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl active:bg-slate-100">6</button>
+                <button onclick="handleInput('-')" class="btn h-16 text-5xl leading-none font-bold bg-violet-500 text-white rounded-3xl">−</button>
                 
-                <button onclick="handleInput('0')" class="btn col-span-2 h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl">0</button>
-                <button onclick="handleInput('.')" class="btn h-16 text-5xl font-semibold bg-white border border-slate-200 rounded-3xl">.</button>
-                <button onclick="calculate()" class="btn h-16 text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-3xl shadow-lg">💖</button>
+                <button onclick="handleInput('1')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl active:bg-slate-100">1</button>
+                <button onclick="handleInput('2')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl active:bg-slate-100">2</button>
+                <button onclick="handleInput('3')" class="btn h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl active:bg-slate-100">3</button>
+                <button onclick="handleInput('+')" class="btn h-16 text-4xl font-bold bg-violet-500 text-white rounded-3xl">+</button>
+                
+                <button onclick="handleInput('0')" class="btn col-span-2 h-16 text-4xl font-semibold bg-white border border-slate-200 rounded-3xl active:bg-slate-100">0</button>
+                <button onclick="handleInput('.')" class="btn h-16 text-5xl font-semibold bg-white border border-slate-200 rounded-3xl active:bg-slate-100">.</button>
+                <button onclick="calculateResult()" class="btn h-16 text-5xl font-bold bg-gradient-to-br from-pink-500 to-purple-600 text-white rounded-3xl shadow-lg">💖</button>
             </div>
         </div>
 
-        <!-- Scientific Panel -->
-        <div id="panel-1" class="calculator-panel hidden p-6">
-            <div class="grid grid-cols-4 gap-3 text-lg">
-                <button onclick="handleInput('sin')" class="btn h-14 bg-purple-100 text-purple-700 rounded-3xl">sin</button>
-                <button onclick="handleInput('cos')" class="btn h-14 bg-purple-100 text-purple-700 rounded-3xl">cos</button>
-                <button onclick="handleInput('tan')" class="btn h-14 bg-purple-100 text-purple-700 rounded-3xl">tan</button>
-                <button onclick="toggleAngleMode()" id="angle-mode" class="btn h-14 bg-amber-100 text-amber-700 rounded-3xl">DEG</button>
-                <!-- More scientific buttons would go here: log, ln, ^, sqrt, !, pi, e, etc. -->
-                <button onclick="handleInput('log')" class="btn h-14 bg-purple-100 text-purple-700 rounded-3xl">log</button>
-                <button onclick="handleInput('ln')" class="btn h-14 bg-purple-100 text-purple-700 rounded-3xl">ln</button>
-                <button onclick="handleInput('sqrt')" class="btn h-14 bg-purple-100 text-purple-700 rounded-3xl">√</button>
-                <button onclick="handleInput('^')" class="btn h-14 bg-purple-100 text-purple-700 rounded-3xl">x^y</button>
+        <!-- Graph Section -->
+        <div class="px-5 pb-8">
+            <div class="bg-slate-50 rounded-3xl p-4 border border-purple-100">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-purple-500 font-medium text-sm">📈 Graph Mode</span>
+                    <input id="functionInput" type="text" value="sin(x)" 
+                           class="flex-1 mx-4 px-5 py-2.5 text-sm bg-white border border-purple-200 rounded-2xl focus:outline-none focus:border-pink-400 font-mono">
+                    <button onclick="plotCurrentFunction()" 
+                            class="px-7 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-sm font-bold rounded-2xl active:scale-95">Plot</button>
+                </div>
+                <div class="graph-container">
+                    <canvas id="graphCanvas" class="w-full h-full"></canvas>
+                </div>
             </div>
+            <p class="text-center text-[10px] text-purple-400 mt-4">Try: sin(x), x², 2^x, cos(3x)</p>
         </div>
 
-        <!-- Graph Panel -->
-        <div id="panel-2" class="calculator-panel hidden p-6">
-            <div class="graph-container bg-slate-50 rounded-3xl p-4 mb-6">
-                <canvas id="graphCanvas"></canvas>
-            </div>
-            <div class="flex gap-3">
-                <input id="functionInput" type="text" value="sin(x)" 
-                       class="flex-1 px-5 py-4 rounded-3xl border border-purple-200 focus:outline-none focus:border-pink-400 text-lg">
-                <button onclick="plotFunction()" 
-                        class="px-8 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-3xl">Plot</button>
-            </div>
-            <p class="text-center text-xs text-purple-400 mt-4">Try: sin(x), x^2, 2^x, cos(2*x)</p>
-        </div>
-
-        <!-- Footer -->
-        <div class="text-center py-6 text-xs text-purple-300">
-            Belinda Calc Pro v1.1.0 • Made with glitter & math 💖
+        <div class="text-center py-6 text-[10px] text-purple-300 border-t">
+            Belinda Calc Pro v1.2.0 • Made with love, math & glitter 💖
         </div>
     </div>
 
     <script>
-        let currentMode = 0;
         let displayValue = '0';
-        let isDegreeMode = true;
-        let chartInstance = null;
+        let previousValue = '';
+        let operator = '';
+        let isDegree = true;
+        let chart = null;
 
-        const display = document.getElementById('display');
-        const expression = document.getElementById('expression');
+        const displayEl = document.getElementById('display');
+        const exprEl = document.getElementById('expression');
 
-        function switchMode(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.calculator-panel').forEach(p => p.classList.add('hidden'));
-            document.getElementById(`panel-${mode}`).classList.remove('hidden');
-            
-            document.querySelectorAll('.tab').forEach((tab, i) => {
-                if (i === mode) {
-                    tab.classList.add('border-b-4', 'border-pink-500', 'text-pink-500');
-                } else {
-                    tab.classList.remove('border-b-4', 'border-pink-500', 'text-pink-500');
-                }
-            });
+        function updateDisplay() {
+            displayEl.textContent = displayValue;
         }
 
-        function handleInput(value) {
-            if (displayValue === '0' && !['+', '-', '*', '/'].includes(value)) {
-                displayValue = value;
+        function handleInput(val) {
+            if (['+', '-', '*', '/', '^'].includes(val)) {
+                previousValue = displayValue;
+                operator = val;
+                exprEl.textContent = `${displayValue} ${val === '*' ? '×' : val === '/' ? '÷' : val}`;
+                displayValue = '0';
+            } else if (val === 'C') {
+                displayValue = '0';
+                previousValue = '';
+                operator = '';
+                exprEl.textContent = '';
             } else {
-                displayValue += value;
+                if (displayValue === '0' && val !== '.') displayValue = val;
+                else displayValue += val;
             }
-            display.textContent = displayValue;
+            updateDisplay();
         }
 
-        function calculate() {
+        function handleScientific(fn) {
+            let result;
             try {
-                let result = math.evaluate(displayValue);
-                displayValue = result.toString();
-                display.textContent = displayValue;
+                const num = parseFloat(displayValue);
+                if (fn === 'sin') result = isDegree ? Math.sin(num * Math.PI / 180) : Math.sin(num);
+                else if (fn === 'cos') result = isDegree ? Math.cos(num * Math.PI / 180) : Math.cos(num);
+                else if (fn === 'tan') result = isDegree ? Math.tan(num * Math.PI / 180) : Math.tan(num);
+                else if (fn === 'log') result = Math.log10(num);
+                else if (fn === 'ln') result = Math.log(num);
+                else if (fn === 'sqrt') result = Math.sqrt(num);
+                else if (fn === '^') {
+                    previousValue = displayValue;
+                    operator = '^';
+                    exprEl.textContent = `${displayValue} ^`;
+                    displayValue = '0';
+                    updateDisplay();
+                    return;
+                }
+                displayValue = result.toFixed(6).replace(/0+$/, '').replace(/\.$/, '');
+                updateDisplay();
             } catch(e) {
-                display.textContent = '¡Error! 💔';
-                setTimeout(() => { displayValue = '0'; display.textContent = '0'; }, 1500);
+                displayValue = 'Error';
+                setTimeout(() => { displayValue = '0'; updateDisplay(); }, 1200);
             }
         }
 
-        function toggleAngleMode() {
-            isDegreeMode = !isDegreeMode;
-            document.getElementById('angle-mode').textContent = isDegreeMode ? 'DEG' : 'RAD';
+        function toggleAngle() {
+            isDegree = !isDegree;
+            document.getElementById('angleBtn').textContent = isDegree ? 'DEG' : 'RAD';
         }
 
-        function plotFunction() {
-            const input = document.getElementById('functionInput');
-            let funcStr = input.value.trim() || 'sin(x)';
+        function calculateResult() {
+            if (!operator) return;
+            try {
+                let a = parseFloat(previousValue);
+                let b = parseFloat(displayValue);
+                let result;
+                if (operator === '^') result = Math.pow(a, b);
+                else result = math.evaluate(`${a}${operator}${b}`);
+                displayValue = result.toString();
+                exprEl.textContent = '';
+                operator = '';
+                updateDisplay();
+            } catch(e) {
+                displayValue = '¡Error! 💔';
+                setTimeout(() => { displayValue = '0'; updateDisplay(); }, 1500);
+            }
+        }
+
+        function plotCurrentFunction() {
+            const input = document.getElementById('functionInput').value.trim() || 'sin(x)';
             const canvas = document.getElementById('graphCanvas');
             
-            if (!chartInstance) {
-                chartInstance = new Chart(canvas, {
+            if (!chart) {
+                chart = new Chart(canvas, {
                     type: 'line',
-                    data: { labels: [], datasets: [{ label: funcStr, borderColor: '#ec4899', borderWidth: 3, tension: 0.4, pointRadius: 0 }] },
-                    options: { 
-                        responsive: true, 
+                    data: { labels: [], datasets: [{ borderColor: '#c026d3', borderWidth: 3.5, tension: 0.35, pointRadius: 0 }] },
+                    options: {
+                        responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: true, position: 'top' } },
-                        scales: { y: { grid: { color: '#e0e7ff' } }, x: { grid: { color: '#e0e7ff' } } }
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: '#e0e7ff' }, ticks: { color: '#a1a1aa' } },
+                            x: { grid: { color: '#e0e7ff' }, ticks: { color: '#a1a1aa' } }
+                        }
                     }
                 });
             }
             
             const labels = [];
-            const data = [];
-            const step = 0.15;
-            for (let x = -10; x <= 10; x += step) {
+            const values = [];
+            for (let x = -8; x <= 8; x += 0.12) {
                 try {
-                    let expr = funcStr.replace(/x/g, `(${x})`);
-                    const y = math.evaluate(expr);
-                    if (isFinite(y)) {
+                    const y = math.evaluate(input.replace(/x/g, x));
+                    if (isFinite(y) && Math.abs(y) < 100) {
                         labels.push(x.toFixed(1));
-                        data.push(y);
+                        values.push(y);
                     }
                 } catch(e) {}
             }
             
-            if (data.length > 5) {
-                chartInstance.data.labels = labels;
-                chartInstance.data.datasets[0].data = data;
-                chartInstance.data.datasets[0].label = funcStr;
-                chartInstance.update();
-                input.style.borderColor = '#a5b4fc';
-            } else {
-                input.style.borderColor = '#f43f5e';
-                setTimeout(() => input.style.borderColor = '#a5b4fc', 2000);
-            }
+            chart.data.labels = labels;
+            chart.data.datasets[0].data = values;
+            chart.data.datasets[0].label = input;
+            chart.update();
         }
 
-        // Keyboard support
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Enter') calculate();
-            if (e.key === 'Escape') { displayValue = '0'; display.textContent = '0'; }
-        });
-
-        // Initialize
-        switchMode(0);
-        display.textContent = '0';
+        // Init
+        updateDisplay();
+        plotCurrentFunction(); // show default graph
         
-        console.log('%c💃 Belinda Calc Pro v1.1.0 ready for smartphones!', 'color:#ec4899; font-size:13px');
+        console.log('%c💃 Belinda Calc Pro v1.2.0 ready for phones in any orientation!', 'color:#db2777; font-weight:600');
     </script>
 </body>
 </html>
