@@ -48,3 +48,4 @@ pids
 # OS generated files
 Thumbs.db
 ehthumbs.db
+.vercel
