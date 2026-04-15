@@ -181,28 +181,47 @@
         }
 
         function plotFunction() {
-            const funcStr = document.getElementById('functionInput').value;
+            const input = document.getElementById('functionInput');
+            let funcStr = input.value.trim() || 'sin(x)';
             const canvas = document.getElementById('graphCanvas');
+            
             if (!chartInstance) {
                 chartInstance = new Chart(canvas, {
                     type: 'line',
-                    data: { labels: [], datasets: [{ label: funcStr, borderColor: '#ec4899', tension: 0.4 }] },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    data: { labels: [], datasets: [{ label: funcStr, borderColor: '#ec4899', borderWidth: 3, tension: 0.4, pointRadius: 0 }] },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true, position: 'top' } },
+                        scales: { y: { grid: { color: '#e0e7ff' } }, x: { grid: { color: '#e0e7ff' } } }
+                    }
                 });
             }
+            
             const labels = [];
             const data = [];
-            for (let x = -10; x <= 10; x += 0.2) {
+            const step = 0.15;
+            for (let x = -10; x <= 10; x += step) {
                 try {
-                    const y = math.evaluate(funcStr.replace(/x/g, x));
-                    labels.push(x.toFixed(1));
-                    data.push(y);
+                    let expr = funcStr.replace(/x/g, `(${x})`);
+                    const y = math.evaluate(expr);
+                    if (isFinite(y)) {
+                        labels.push(x.toFixed(1));
+                        data.push(y);
+                    }
                 } catch(e) {}
             }
-            chartInstance.data.labels = labels;
-            chartInstance.data.datasets[0].data = data;
-            chartInstance.data.datasets[0].label = funcStr;
-            chartInstance.update();
+            
+            if (data.length > 5) {
+                chartInstance.data.labels = labels;
+                chartInstance.data.datasets[0].data = data;
+                chartInstance.data.datasets[0].label = funcStr;
+                chartInstance.update();
+                input.style.borderColor = '#a5b4fc';
+            } else {
+                input.style.borderColor = '#f43f5e';
+                setTimeout(() => input.style.borderColor = '#a5b4fc', 2000);
+            }
         }
 
         // Keyboard support
