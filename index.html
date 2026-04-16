@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Belinda Calc Pro v1.4.0 💃✨</title>
+    <title>Belinda Calc Pro v1.4.2 💃✨</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/13.2.0/math.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -22,6 +22,8 @@
             font-size: clamp(2.1rem, 8vw, 3rem);
             background: linear-gradient(135deg, #4c1d95, #831843);
             overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             white-space: nowrap;
         }
@@ -65,7 +67,7 @@
             <div class="text-5xl sparkle">💃</div>
             <div>
                 <h1 class="title text-3xl font-bold">Belinda Calc Pro</h1>
-                <p class="text-pink-100 text-sm">v1.4 • Calculator • Graph • Currency</p>
+                <p class="text-pink-100 text-sm">v1.4.2 • Calculator • Graph • Currency</p>
             </div>
         </div>
 
@@ -153,7 +155,7 @@
         </div>
 
         <div class="text-center py-6 text-xs text-purple-400 border-t flex-shrink-0">
-            Belinda Calc Pro v1.4 • With Currency Converter
+            Belinda Calc Pro v1.4.2 • With Currency Converter
         </div>
     </div>
 
@@ -163,6 +165,40 @@
         let isDeg = true;
         let chart = null;
         let exchangeRates = {};
+        /**
+         * Pin horizontal scroll so the right edge (newest digits for this UI) stays visible.
+         * Uses max scroll (scrollWidth - clientWidth), forced layout, and several passes so
+         * scrollWidth is correct after text and font metrics settle.
+         */
+        function scrollDisplayToEnd() {
+            const el = document.getElementById('display');
+            if (!el) return;
+            const pin = () => {
+                void el.offsetWidth;
+                const max = Math.max(0, el.scrollWidth - el.clientWidth);
+                el.scrollLeft = max;
+            };
+            pin();
+            requestAnimationFrame(() => {
+                pin();
+                requestAnimationFrame(() => {
+                    pin();
+                    setTimeout(pin, 0);
+                });
+            });
+        }
+
+        /** Any textContent change on the main display triggers a scroll (covers every code path). */
+        function initDisplayScrollObserver() {
+            const el = document.getElementById('display');
+            if (!el || typeof MutationObserver === 'undefined') return;
+            new MutationObserver(() => scrollDisplayToEnd()).observe(el, {
+                childList: true,
+                characterData: true,
+                subtree: true
+            });
+        }
+
         let currencies = [
             {code: 'USD', name: 'US Dollar', flag: '🇺🇸'},
             {code: 'EUR', name: 'Euro', flag: '🇪🇺'},
@@ -210,6 +246,7 @@
             else if (displayValue === '0' && v !== '.') displayValue = v;
             else displayValue += v;
             document.getElementById('display').textContent = displayValue;
+            scrollDisplayToEnd();
         }
 
         function sci(op) {
@@ -222,6 +259,7 @@
             if (op === 'sqrt') r = Math.sqrt(n);
             displayValue = r.toFixed(6).replace(/0+$/,'').replace(/\.$/,'');
             document.getElementById('display').textContent = displayValue;
+            scrollDisplayToEnd();
         }
 
         function backspace() {
@@ -231,6 +269,7 @@
                 displayValue = displayValue.slice(0, -1);
             }
             document.getElementById('display').textContent = displayValue;
+            scrollDisplayToEnd();
         }
 
         function toggleDeg() {
@@ -242,9 +281,14 @@
             try {
                 displayValue = math.evaluate(displayValue).toString();
                 document.getElementById('display').textContent = displayValue;
+                scrollDisplayToEnd();
             } catch(e) {
                 document.getElementById('display').textContent = 'Error 💔';
-                setTimeout(() => document.getElementById('display').textContent = '0', 1400);
+                scrollDisplayToEnd();
+                setTimeout(() => {
+                    document.getElementById('display').textContent = '0';
+                    scrollDisplayToEnd();
+                }, 1400);
             }
         }
 
@@ -275,14 +319,14 @@
         }
 
         // Currency Converter
-        async function fetchCurrencyRates() {
-            const base = 'usd';
+        async function fetchCurrencyRates(selectedBase = 'usd') {
+            const base = selectedBase;
             try {
                 const res = await fetch(`https://latest.currency-api.pages.dev/v1/currencies/${base}.json`);
                 const data = await res.json();
                 exchangeRates = data[base];
                 // Add BTC manually (approximate, for demo)
-                exchangeRates.btc = 0.000017; // ~1 USD = 0.000017 BTC (live rate changes)
+                exchangeRates.btc = 0.000017;
                 populateBaseSelector();
                 convertCurrency();
             } catch(e) {
@@ -338,11 +382,13 @@
         }
 
         // Init
+        initDisplayScrollObserver();
         document.getElementById('display').textContent = '0';
+        scrollDisplayToEnd();
         switchTab(0);
         setTimeout(() => plotGraph(), 400);
         
-        console.log('%c💃 v1.4 with beautiful Currency tab is ready! Live rates from trusted API.', 'color:#c026d3; font-weight:600');
+        console.log('%c💃 v1.4.2 with beautiful Currency tab is ready! Live rates from trusted API.', 'color:#c026d3; font-weight:600');
     </script>
 </body>
 </html>

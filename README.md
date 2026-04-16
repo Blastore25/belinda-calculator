@@ -1,5 +1,7 @@
 # Belinda Calculator 💃✨
 
+**Version:** 1.4.2
+
 Una calculadora PWA cute, confiable y lista para produccion.  
 Inspired by Belinda vibes: bubbly and charming, but seriously committed to quality.
 
